@@ -1,0 +1,1 @@
+CUDA_VISIBLE_DEVICES=0,1 ~/_llama/code/build/bin/llama-server --models-dir ~/_llama/models --models-preset ~/_llama/models.ini --models-max 2 --port 11434 --embedding --split-mode none
