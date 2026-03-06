@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 1. Define the installation directory
-INSTALL_DIR="$HOME/_llama/code"
+INSTALL_DIR="$HOME/.llamacpp/code"
 BUILD_DIR="$INSTALL_DIR/build"
 
 echo "--- 🚀 Starting llama.cpp Update & Build ---"
