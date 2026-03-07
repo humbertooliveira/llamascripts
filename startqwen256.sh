@@ -6,8 +6,7 @@ MODELS_DIR="$HOME/.llamacpp/models"
 
 # --- CLEANUP ---
 echo "🧹 Cleaning up previous instances..."
-sudo fuser -k 11001/tcp
-# sudo fuser -k 11002/tcp
+pkill -9 llama-server
 sleep 2
 
 # --- 1. START CODING MODEL (Port 11001) ---
@@ -40,4 +39,4 @@ CUDA_VISIBLE_DEVICES=0,1 $BINARY \
 #   --embedding \
 #   --split-mode none &
 
-echo "✅ Model is starting. Check logs for VRAM distribution details."
+# echo "✅ Model is starting. Check logs for VRAM distribution details."

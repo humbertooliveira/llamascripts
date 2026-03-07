@@ -87,33 +87,24 @@ Starts llama-server on port 11434 with both models enabled.
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                    User Scripts                         │
-├─────────────────────────────────────────────────────────┤
-│  update_llama.sh  │  run_llama.sh  │ startqwen*.sh     │
-└─────────────────────────────────────────────────────────┘
-                           │
-                           ▼
-┌─────────────────────────────────────────────────────────┐
-│                   llama.cpp Binary                      │
-│              (CUDA-accelerated)                         │
-└─────────────────────────────────────────────────────────┘
-                           │
-        ┌──────────────────┼──────────────────┐
-        ▼                  ▼                  ▼
-┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-│  Port 11434  │  │  Port 11001  │  │  Port 11002  │
-│   Main API   │  │   Qwen 9B    │  │ Embeddings   │
-└──────────────┘  └──────────────┘  └──────────────┘
-                           │
-        ┌──────────────────┼──────────────────┐
-        ▼                  ▼                  ▼
-┌─────────────────────────────────────────────────────────┐
-│                    Models                               │
-├─────────────────────────────────────────────────────────┤
-│  Qwen3.5-9B-Q6_K.gguf  │  mxbai-embed-large-v1-f16.gguf │
-└─────────────────────────────────────────────────────────┘
+```mermaid
+graph TD
+    A[User Scripts] --> B[llama.cpp Binary]
+    B --> C[Port 11434<br/>Main API]
+    B --> D[Port 11001<br/>Qwen 9B]
+    B --> E[Port 11002<br/>Embeddings]
+    
+    C --> F[Qwen3.5-9B-Q6_K.gguf]
+    D --> F
+    E --> G[mxbai-embed-large-v1-f16.gguf]
+    
+    style A fill:#e1f5fe
+    style B fill:#f3e5f5
+    style C fill:#e8f5e9
+    style D fill:#fff3e0
+    style E fill:#fce4ec
+    style F fill:#f1f8e9
+    style G fill:#f1f8e9
 ```
 
 ## Environment Variables
@@ -164,6 +155,110 @@ sudo fuser -k 11002/tcp
 - Use `startqwen256.sh` for dual-GPU distribution
 - Reduce context size in `models.ini` if needed
 - Use lower quantization (Q4_K instead of Q6_K)
+
+## Server Parameters
+
+This section documents the command-line parameters available for the llama-server command used in this setup. These parameters control various aspects of model loading, server configuration, performance optimization, and API behavior.
+
+### Core Model Parameters
+- **`-m, --model FILE`** - Path to the GGUF model file to load
+- **`--alias ALIAS`** - Model alias for identification in API calls
+- **`--ctx-size N`** - Context size in tokens (e.g., 131072 for 128k, 262144 for 256k)
+- **`--n-gpu-layers N`** - Number of layers to offload to GPU for acceleration
+- **`--split-mode MODE`** - Split mode for multi-GPU setups (none, layer, row)
+- **`--main-gpu N`** - Main GPU index for model loading
+- **`--device DEVICE`** - GPU device specification (e.g., cuda0, cuda1)
+
+### Server Configuration
+- **`--host HOST`** - Host address to bind to (default: 127.0.0.1)
+- **`--port PORT`** - Port number for the API server (default: 8080)
+- **`--api-key KEY`** - API key for authentication
+- **`--timeout N`** - Server timeout in seconds (default: 600)
+- **`--threads N`** - Number of threads to use for processing
+- **`--threads-http N`** - Number of threads for HTTP requests
+- **`--parallel N`** - Number of parallel requests to handle
+- **`--batch-size N`** - Batch size for processing
+- **`--ubatch-size N`** - Micro batch size for memory optimization
+
+### Performance Options
+- **`--flash-attn ON/OFF`** - Enable/disable flash attention for faster attention computation
+- **`--jinja ON/OFF`** - Enable/disable Jinja template engine for chat formatting
+- **`--embedding`** - Enable embedding mode for vector generation
+- **`--cont-batching`** - Enable continuous batching for improved throughput
+- **`--metrics`** - Enable Prometheus compatible metrics endpoint for monitoring
+- **`--cache-prompt`** - Enable prompt caching to improve response times
+- **`--cache-reuse N`** - Minimum chunk size for cache reuse via KV shifting
+
+## Metrics Endpoint
+
+The `--metrics` flag enables a Prometheus-compatible metrics endpoint that provides detailed performance insights about the server's operation. When enabled, metrics are exposed at the `/metrics` endpoint.
+
+### How to View Metrics
+
+1. **Enable metrics**: Start the server with the `--metrics` flag
+2. **Access metrics**: Make a GET request to `http://localhost:PORT/metrics` (replace PORT with your server's port)
+3. **Example command**: `curl http://localhost:11434/metrics`
+
+### Available Metrics
+
+The metrics endpoint exposes the following key metrics:
+- `llamacpp:prompt_tokens_total` - Total number of prompt tokens processed
+- `llamacpp:tokens_predicted_total` - Total number of generation tokens processed
+- `llamacpp:prompt_tokens_seconds` - Average prompt throughput in tokens/second
+- `llamacpp:predicted_tokens_seconds` - Average generation throughput in tokens/second
+- `llamacpp:kv_cache_usage_ratio` - KV-cache usage ratio (0.0 to 1.0)
+- `llamacpp:kv_cache_tokens` - Number of tokens currently in KV-cache
+- `llamacpp:requests_processing` - Number of requests currently being processed
+- `llamacpp:requests_deferred` - Number of requests deferred due to resource constraints
+- `llamacpp:n_tokens_max` - High watermark of context size observed
+
+### Monitoring Tools
+
+The metrics can be consumed by various monitoring tools:
+- **Prometheus**: Direct scraping of the metrics endpoint
+- **Grafana**: Visualize metrics in dashboards
+- **Command line**: Use `curl` or `wget` to fetch metrics
+- **Application monitoring**: Integrate with existing monitoring systems
+
+### Example Usage
+
+To enable metrics in your setup, modify your server startup command to include `--metrics`:
+```bash
+./llama-server --model model.gguf --port 11434 --metrics
+```
+
+Then access the metrics:
+```bash
+curl http://localhost:11434/metrics
+```
+
+### Quantization and Cache
+- **`--cache-type-k TYPE`** - Cache type for key matrices (e.g., q8_0, f16)
+- **`--cache-type-v TYPE`**** - Cache type for value matrices (e.g., q8_0, f16)
+- **`--ctx-shift`** - Enable context shifting for extended context handling
+- **`--swa-full`** - Enable SWA full mode for specific model optimizations
+
+### Model Management
+- **`--models-dir PATH`** - Directory containing models for router server
+- **`--models-preset PATH`** - Path to INI file with model presets
+- **`--models-max N`** - Maximum number of models to load simultaneously
+- **`--models-autoload`** - Enable automatic model loading
+
+### Sampling Parameters
+- **`--temp N`** - Temperature for sampling (default: 0.8) - controls randomness
+- **`--top-k N`** - Top-k sampling value - limits vocabulary to top K tokens
+- **`--top-p N`** - Top-p (nucleus) sampling value - cumulative probability threshold
+- **`--repeat-penalty N`** - Penalty for repeated tokens
+- **`--presence-penalty N`** - Penalty for presence of tokens
+- **`--frequency-penalty N`**** - Penalty for frequency of tokens
+
+### Advanced Options
+- **`--slot-prompt-similarity SIM`** - Prompt similarity threshold for slot reuse
+- **`--reasoning-format FORMAT`** - Format for reasoning output
+- **`--reasoning-budget N`** - Budget for reasoning tokens
+- **`--chat-template JINJA`** - Custom Jinja chat template
+- **`--chat-template-file FILE`** - File containing custom Jinja template
+- **`--prefill-assistant`** - Prefill assistant responses if last message is assistant
 
 ## License
 

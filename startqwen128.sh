@@ -6,17 +6,16 @@ MODELS_DIR="$HOME/.llamacpp/models"
 
 # --- CLEANUP ---
 echo "🧹 Cleaning up previous instances..."
-sudo fuser -k 11001/tcp
-# sudo fuser -k 11002/tcp
+pkill -9 llama-server
 sleep 2
 
 # --- 1. START CODING MODEL (Port 11001) ---
-# Distributed across GPU 0 and 1
+# Distributed across GPU 0 and 1 | 131072 |
 echo "🚀 Launching Qwen 9B Coder (256k Context, Q8 Cache) on Dual GPUs..."
 CUDA_VISIBLE_DEVICES=1 $BINARY \
   --model "$MODELS_DIR/Qwen_Qwen3.5-9B-Q6_K.gguf" \
   --alias "Qwen3:9B" \
-  --port 131072 \
+  --port 11001 \
   --ctx-size 262144 \
   --n-gpu-layers 99 \
   --split-mode layer \
@@ -40,4 +39,4 @@ CUDA_VISIBLE_DEVICES=1 $BINARY \
 #   --embedding \
 #   --split-mode none &
 
-echo "✅ Model is starting. Check logs for VRAM distribution details."
+# echo "✅ Model is starting. Check logs for VRAM distribution details."
