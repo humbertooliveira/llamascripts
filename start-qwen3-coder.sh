@@ -3,6 +3,9 @@
 # --- CONFIGURATION ---
 BINARY="$HOME/.llamacpp/code/build/bin/llama-server"
 MODELS_DIR="$HOME/.llamacpp/models"
+MODEL_NAME="Qwen3-Coder-30B-A3B-Instruct-Q4_0.gguf"
+# MODELS_DIR="/mnt/d/lmstudio/lmstudio-community/Qwen3-Coder-30B-A3B-Instruct-GGUF"
+# MODEL_NAME="Qwen3-Coder-30B-A3B-Instruct-Q4_K_M.gguf"
 
 # --- CLEANUP ---
 echo "🧹 Cleaning up previous instances..."
@@ -14,7 +17,7 @@ sleep 2
 # Distributed across GPU 0 and 1
 echo "🚀 Launching Qwen3 Coder on Dual GPUs..."
 CUDA_VISIBLE_DEVICES=1,0 $BINARY \
-  --model "$MODELS_DIR/Qwen3-Coder-30B-A3B-Instruct-Q4_0.gguf" \
+  --model "$MODELS_DIR/$MODEL_NAME" \
   --alias "Qwen3-Coder:30B" \
   --port 11003 \
   --ctx-size 160000 \
