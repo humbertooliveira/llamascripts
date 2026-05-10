@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# https://huggingface.co/havenoammo/Qwen3.6-35B-A3B-MTP-GGUF
 # --- CONFIGURATION ---
 BINARY=${1:-"$HOME/llamacpp-pr22673"}/build/bin/llama-server
 MODEL=${2:-"$HOME/models/havenoammo/Qwen3.6-35B-A3B-MTP-UD-Q4_K_XL.gguf"}
