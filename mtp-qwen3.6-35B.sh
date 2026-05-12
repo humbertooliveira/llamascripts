@@ -39,7 +39,8 @@ CUDA_VISIBLE_DEVICES=0,1 $BINARY \
   --kv-unified \
   --no-context-shift \
   --metrics \
-  --tensor-split 0.6,0.4
+  --tensor-split 0.6,0.4 \
+  --ubatch-size 256 
   
 
   # --sleep-idle-seconds 60 \

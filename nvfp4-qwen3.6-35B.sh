@@ -1,20 +1,17 @@
 #!/bin/bash
 
-# https://huggingface.co/havenoammo/Qwen3.6-27B-MTP-UD-GGUF
-
 # --- CONFIGURATION ---
-BINARY=${1:-"$HOME/llamacpp-pr22673"}/build/bin/llama-server
-MODEL=${2:-"$HOME/models/havenoammo/Qwen3.6-27B-MTP-UD-Q5_K_XL.gguf"}
-# MODEL=${2:-"$HOME/models/unsloth/Qwen3.6-27B-MTP-UD-Q4_K_XL.gguf"}
-SPECTYPE=${3:-"mtp"}
-DRAFTMAX=${4:-"3"}
-ALIAS="qwen3.6-27B"
+BINARY=${1:-"$HOME/llamacpp"}/build/bin/llama-server
+MODEL=${2:-"$HOME/models/libertaidai/Qwen3.6-35B-A3B-NVFP4-Q4_K_M.gguf"}
+SPECTYPE=${3:-"ngram-mod"}
+DRAFTMAX=${4:-"16"}
+ALIAS="qwen3.6-35B"
 
 echo "Starting server from $BINARY with model $MODEL..."
 
 echo "Cleaning up previous instances..."
 pkill -f llama-server
-sleep 1
+sleep 2
 
 
 CUDA_VISIBLE_DEVICES=0,1 $BINARY \
@@ -40,9 +37,7 @@ CUDA_VISIBLE_DEVICES=0,1 $BINARY \
   --jinja \
   --kv-unified \
   --no-context-shift \
-  --metrics \
-  --tensor-split 0.6,0.4 \
-  --ubatch-size 256 
+  --metrics 
   
 
   # --sleep-idle-seconds 60 \

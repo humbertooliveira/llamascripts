@@ -1,20 +1,20 @@
 #!/bin/bash
 
 # https://huggingface.co/havenoammo/Qwen3.6-27B-MTP-UD-GGUF
+# echo "Starting server from $BINARY with model $MODEL..."
+
+# echo "Cleaning up previous instances..."
+# pkill -f llama-server
+# sleep 1
+
+
 
 # --- CONFIGURATION ---
-BINARY=${1:-"$HOME/llamacpp-pr22673"}/build/bin/llama-server
-MODEL=${2:-"$HOME/models/havenoammo/Qwen3.6-27B-MTP-UD-Q5_K_XL.gguf"}
-# MODEL=${2:-"$HOME/models/unsloth/Qwen3.6-27B-MTP-UD-Q4_K_XL.gguf"}
+BINARY=$HOME/tests/mtp-clean-unsloth/llama.cpp/build/bin/llama-server
+MODEL=$HOME/tests/mtp-clean-unsloth/Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf
 SPECTYPE=${3:-"mtp"}
 DRAFTMAX=${4:-"3"}
-ALIAS="qwen3.6-27B"
-
-echo "Starting server from $BINARY with model $MODEL..."
-
-echo "Cleaning up previous instances..."
-pkill -f llama-server
-sleep 1
+ALIAS="qwen3.6-35B-MTP"
 
 
 CUDA_VISIBLE_DEVICES=0,1 $BINARY \
@@ -43,6 +43,7 @@ CUDA_VISIBLE_DEVICES=0,1 $BINARY \
   --metrics \
   --tensor-split 0.6,0.4 \
   --ubatch-size 256 
+  # --override-kv nextn_predict_layers=int:3
   
 
   # --sleep-idle-seconds 60 \

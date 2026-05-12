@@ -1,20 +1,14 @@
 #!/bin/bash
 
-# https://huggingface.co/havenoammo/Qwen3.6-27B-MTP-UD-GGUF
-
 # --- CONFIGURATION ---
-BINARY=${1:-"$HOME/llamacpp-pr22673"}/build/bin/llama-server
-MODEL=${2:-"$HOME/models/havenoammo/Qwen3.6-27B-MTP-UD-Q5_K_XL.gguf"}
-# MODEL=${2:-"$HOME/models/unsloth/Qwen3.6-27B-MTP-UD-Q4_K_XL.gguf"}
-SPECTYPE=${3:-"mtp"}
-DRAFTMAX=${4:-"3"}
+BINARY=$HOME/llamacpp/build/bin/llama-server
+MODEL=$HOME/models/freenixi/Abiray-Qwen3.6-27B-NVFP4.gguf
+# MODEL=$HOME/models/libertaidai/Qwen3.6-27B-NVFP4-Q4_K_M.gguf
+DRAFT_MODEL="$HOME/models/unsloth/Qwen3.5-0.8B-UD-Q8_K_XL.gguf"
+SPECTYPE=ngram-mod
+DRAFTMAX="16"
 ALIAS="qwen3.6-27B"
-
-echo "Starting server from $BINARY with model $MODEL..."
-
-echo "Cleaning up previous instances..."
-pkill -f llama-server
-sleep 1
+CTX=$((${1:-128} * 1024))
 
 
 CUDA_VISIBLE_DEVICES=0,1 $BINARY \
@@ -24,7 +18,7 @@ CUDA_VISIBLE_DEVICES=0,1 $BINARY \
   --spec-draft-n-max $DRAFTMAX \
   --port 9081 \
   --host 192.168.1.15 \
-  --ctx-size 131072  \
+  --ctx-size $CTX \
   --cache-type-k q8_0 \
   --cache-type-v q8_0 \
   --gpu-layers 99 \
@@ -41,10 +35,8 @@ CUDA_VISIBLE_DEVICES=0,1 $BINARY \
   --kv-unified \
   --no-context-shift \
   --metrics \
-  --tensor-split 0.6,0.4 \
-  --ubatch-size 256 
   
-
+  # --model-draft $DRAFT_MODEL \
   # --sleep-idle-seconds 60 \
   # --ctx-size 262144 \
   # --ctx-size 217088 \

@@ -1,24 +1,25 @@
 #!/bin/bash
 
-# https://huggingface.co/havenoammo/Qwen3.6-27B-MTP-UD-GGUF
-
 # --- CONFIGURATION ---
-BINARY=${1:-"$HOME/llamacpp-pr22673"}/build/bin/llama-server
-MODEL=${2:-"$HOME/models/havenoammo/Qwen3.6-27B-MTP-UD-Q5_K_XL.gguf"}
-# MODEL=${2:-"$HOME/models/unsloth/Qwen3.6-27B-MTP-UD-Q4_K_XL.gguf"}
-SPECTYPE=${3:-"mtp"}
-DRAFTMAX=${4:-"3"}
+BINARY=${1:-"$HOME/llamacpp"}/build/bin/llama-server
+MODEL=${2:-"$HOME/models/unsloth/Qwen3.6-27B-UD-Q4_K_XL.gguf"}
+DRAFT_MODEL="$HOME/models/unsloth/Qwen3.5-0.8B-UD-Q8_K_XL.gguf"
+# DRAFT_MODEL="$HOME/models/qwen/qwen2.5-0.5b-instruct-q8_0.gguf"
+#DRAFT_MODEL="$HOME/models/qwen/qwen2.5-coder-0.5b-instruct-q8_0.gguf" # o coder teve uma aceptance rate menor
+SPECTYPE=${3:-"ngram-mod"}
+DRAFTMAX=${4:-"16"}
 ALIAS="qwen3.6-27B"
 
 echo "Starting server from $BINARY with model $MODEL..."
 
 echo "Cleaning up previous instances..."
 pkill -f llama-server
-sleep 1
+sleep 2
 
 
 CUDA_VISIBLE_DEVICES=0,1 $BINARY \
   --model $MODEL \
+  --model-draft $DRAFT_MODEL \
   --alias $ALIAS \
   --spec-type $SPECTYPE \
   --spec-draft-n-max $DRAFTMAX \
@@ -41,8 +42,6 @@ CUDA_VISIBLE_DEVICES=0,1 $BINARY \
   --kv-unified \
   --no-context-shift \
   --metrics \
-  --tensor-split 0.6,0.4 \
-  --ubatch-size 256 
   
 
   # --sleep-idle-seconds 60 \
