@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 1. Define the installation directory
-INSTALL_DIR="$HOME/llamacpp"
+INSTALL_DIR="$HOME/tests/mtp-clean-unsloth/llama.cpp"
 BUILD_DIR="$INSTALL_DIR/build"
 
 echo "--- 🚀 Starting llama.cpp Update & Build ---"
