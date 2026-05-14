@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # --- CONFIGURATION ---
-BINARY=${1:-"$HOME/llamacpp"}/build/bin/llama-server
-MODEL=${2:-"$HOME/models/unsloth/Qwen3.6-27B-UD-Q4_K_XL.gguf"}
-DRAFT_MODEL="$HOME/models/unsloth/Qwen3.5-0.8B-UD-Q8_K_XL.gguf"
-# DRAFT_MODEL="$HOME/models/qwen/qwen2.5-0.5b-instruct-q8_0.gguf"
+BINARY=$HOME/llamacpp/build/bin/llama-server
+MODEL=$HOME/models/unsloth/Qwen3.6-27B-UD-Q4_K_XL.gguf
+DRAFT_MODEL=$HOME/models/unsloth/Qwen3.5-0.8B-UD-Q8_K_XL.gguf
+#DRAFT_MODEL="$HOME/models/qwen/qwen2.5-0.5b-instruct-q8_0.gguf"
 #DRAFT_MODEL="$HOME/models/qwen/qwen2.5-coder-0.5b-instruct-q8_0.gguf" # o coder teve uma aceptance rate menor
-SPECTYPE=${3:-"ngram-mod"}
-DRAFTMAX=${4:-"16"}
+SPECTYPE=ngram-mod
+DRAFTMAX=16
 ALIAS="qwen3.6-27B"
 
 echo "Starting server from $BINARY with model $MODEL..."

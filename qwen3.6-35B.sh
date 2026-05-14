@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # --- CONFIGURATION ---
-BINARY=${1:-"$HOME/llamacpp"}/build/bin/llama-server
-MODEL=${2:-"$HOME/models/unsloth/Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf"}
-SPECTYPE=${3:-"ngram-mod"}
-DRAFTMAX=${4:-"16"}
+BINARY=$HOME/llamacpp/build/bin/llama-server
+MODEL=$HOME/models/unsloth/Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf
+SPECTYPE=ngram-mod
+DRAFTMAX=16
 ALIAS="qwen3.6-35B"
-
+CTX=$((${1:-128} * 1024))
 echo "Starting server from $BINARY with model $MODEL..."
 
 echo "Cleaning up previous instances..."
@@ -21,7 +21,7 @@ CUDA_VISIBLE_DEVICES=0,1 $BINARY \
   --spec-draft-n-max $DRAFTMAX \
   --port 9081 \
   --host 192.168.1.15 \
-  --ctx-size 131072  \
+  --ctx-size $CTX  \
   --cache-type-k q8_0 \
   --cache-type-v q8_0 \
   --gpu-layers 99 \

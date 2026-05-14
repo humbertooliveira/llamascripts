@@ -3,12 +3,13 @@
 # https://huggingface.co/havenoammo/Qwen3.6-27B-MTP-UD-GGUF
 
 # --- CONFIGURATION ---
-BINARY=${1:-"$HOME/llamacpp-pr22673"}/build/bin/llama-server
-MODEL=${2:-"$HOME/models/havenoammo/Qwen3.6-27B-MTP-UD-Q5_K_XL.gguf"}
-# MODEL=${2:-"$HOME/models/unsloth/Qwen3.6-27B-MTP-UD-Q4_K_XL.gguf"}
-SPECTYPE=${3:-"mtp"}
-DRAFTMAX=${4:-"3"}
+BINARY=$HOME/llamacpp-pr22673/build/bin/llama-server
+MODEL=$HOME/models/havenoammo/Qwen3.6-27B-MTP-UD-Q5_K_XL.gguf
+# MODEL=$HOME/models/unsloth/Qwen3.6-27B-MTP-UD-Q4_K_XL.gguf"
+SPECTYPE=mtp"
+DRAFTMAX=3"
 ALIAS="qwen3.6-27B"
+CTX=$((${1:-128} * 1024))
 
 echo "Starting server from $BINARY with model $MODEL..."
 
@@ -24,7 +25,7 @@ CUDA_VISIBLE_DEVICES=0,1 $BINARY \
   --spec-draft-n-max $DRAFTMAX \
   --port 9081 \
   --host 192.168.1.15 \
-  --ctx-size 131072  \
+  --ctx-size $CTX  \
   --cache-type-k q8_0 \
   --cache-type-v q8_0 \
   --gpu-layers 99 \

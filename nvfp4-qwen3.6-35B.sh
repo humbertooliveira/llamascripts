@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # --- CONFIGURATION ---
-BINARY=${1:-"$HOME/llamacpp"}/build/bin/llama-server
-MODEL=${2:-"$HOME/models/libertaidai/Qwen3.6-35B-A3B-NVFP4-Q4_K_M.gguf"}
-SPECTYPE=${3:-"ngram-mod"}
-DRAFTMAX=${4:-"16"}
+BINARY=$HOME/llamacpp/build/bin/llama-server
+MODEL=$HOME/models/libertaidai/Qwen3.6-35B-A3B-NVFP4-Q4_K_M.gguf
+SPECTYPE=ngram-mod
+DRAFTMAX=16
 ALIAS="qwen3.6-35B"
 
 echo "Starting server from $BINARY with model $MODEL..."

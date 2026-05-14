@@ -12,10 +12,10 @@
 # --- CONFIGURATION ---
 BINARY=$HOME/tests/mtp-clean-unsloth/llama.cpp/build/bin/llama-server
 MODEL=$HOME/tests/mtp-clean-unsloth/Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf
-SPECTYPE=${3:-"mtp"}
-DRAFTMAX=${4:-"3"}
+SPECTYPE=mtp
+DRAFTMAX=3
 ALIAS="qwen3.6-35B-MTP"
-
+CTX=$((${1:-128} * 1024))
 
 CUDA_VISIBLE_DEVICES=0,1 $BINARY \
   --model $MODEL \
@@ -24,7 +24,7 @@ CUDA_VISIBLE_DEVICES=0,1 $BINARY \
   --spec-draft-n-max $DRAFTMAX \
   --port 9081 \
   --host 192.168.1.15 \
-  --ctx-size 131072  \
+  --ctx-size $CTX  \
   --cache-type-k q8_0 \
   --cache-type-v q8_0 \
   --gpu-layers 99 \
