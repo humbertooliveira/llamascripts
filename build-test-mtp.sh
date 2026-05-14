@@ -9,7 +9,7 @@ echo "--- 🚀 Starting llama.cpp Update & Build ---"
 # 4. Clone or Update llama.cpp
 echo "🔄 Pulling latest CODE..."
 cd "$INSTALL_DIR"
-git pull
+git pull --rebase
 
 
 # 5. Build with CUDA
