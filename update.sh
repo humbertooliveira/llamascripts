@@ -6,16 +6,20 @@ BUILD_DIR="$INSTALL_DIR/build"
 
 echo "--- 🚀 Starting llama.cpp Update & Build ---"
 
-# 4. Clone or Update llama.cpp
-echo "🔄 Pulling latest CODE..."
-cd "$INSTALL_DIR"
-git pull
-
-
 # 5. Build with CUDA
 echo "🧹 Cleaning previous build..."
 rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
+
+# 4. Clone or Update llama.cpp
+echo "🔄 Pulling latest CODE..."
+cd "$INSTALL_DIR"
+echo "Fetching tags..."
+git fetch --tags
+LATEST_RELEASE=$(git describe --tags `git rev-list --tags --max-count=1`)
+echo "Latest release is $LATEST_RELEASE"
+git -c advice.detachedHead=false checkout refs/tags/$LATEST_RELEASE
+# git pull
 
 ## usar no máximo o cuda 13.0 para não ter o bug com os modelos MOE, conforme sloth
 # https://www.reddit.com/r/unsloth/comments/1sgl0wh/do_not_use_cuda_132_to_run_models/
