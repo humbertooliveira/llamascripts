@@ -12,7 +12,7 @@
 # --- CONFIGURATION ---
 BINARY=$HOME/tests/mtp-clean-unsloth/llama.cpp/build/bin/llama-server
 MODEL=$HOME/tests/mtp-clean-unsloth/Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf
-SPECTYPE=mtp
+SPECTYPE=draft-mtp
 DRAFTMAX=3
 ALIAS="qwen3.6-35B-MTP"
 CTX=$((${1:-128} * 1024))

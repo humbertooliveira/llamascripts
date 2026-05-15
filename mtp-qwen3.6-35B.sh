@@ -4,7 +4,7 @@
 # --- CONFIGURATION ---
 BINARY=$HOME/llamacpp-pr22673/build/bin/llama-server
 MODEL=$HOME/models/havenoammo/Qwen3.6-35B-A3B-MTP-UD-Q4_K_XL.gguf
-SPECTYPE=mtp
+SPECTYPE=draft-mtp
 DRAFTMAX=3
 ALIAS="qwen3.6-35B"
 CTX=$((${1:-128} * 1024))

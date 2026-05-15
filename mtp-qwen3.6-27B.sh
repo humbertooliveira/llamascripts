@@ -6,7 +6,7 @@
 BINARY=$HOME/llamacpp-pr22673/build/bin/llama-server
 MODEL=$HOME/models/havenoammo/Qwen3.6-27B-MTP-UD-Q5_K_XL.gguf
 # MODEL=$HOME/models/unsloth/Qwen3.6-27B-MTP-UD-Q4_K_XL.gguf"
-SPECTYPE=mtp"
+SPECTYPE=draft-mtp
 DRAFTMAX=3"
 ALIAS="qwen3.6-27B"
 CTX=$((${1:-128} * 1024))

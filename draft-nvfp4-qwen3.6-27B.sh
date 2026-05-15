@@ -36,6 +36,7 @@ CUDA_VISIBLE_DEVICES=0,1 $BINARY \
   --kv-unified \
   --no-context-shift \
   --metrics \
+  --log-verbosity 4
   
 
   # --sleep-idle-seconds 60 \
