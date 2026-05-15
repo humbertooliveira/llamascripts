@@ -6,7 +6,7 @@ MODEL=$HOME/models/unsloth/Qwen3.6-27B-UD-Q4_K_XL.gguf
 DRAFT_MODEL=$HOME/models/unsloth/Qwen3.5-0.8B-UD-Q8_K_XL.gguf
 #DRAFT_MODEL="$HOME/models/qwen/qwen2.5-0.5b-instruct-q8_0.gguf"
 #DRAFT_MODEL="$HOME/models/qwen/qwen2.5-coder-0.5b-instruct-q8_0.gguf" # o coder teve uma aceptance rate menor
-SPECTYPE=ngram-mod
+SPECTYPE=ngram-mod,draft-simple
 DRAFTMAX=16
 ALIAS="qwen3.6-27B"
 
@@ -42,8 +42,10 @@ CUDA_VISIBLE_DEVICES=0,1 $BINARY \
   --kv-unified \
   --no-context-shift \
   --metrics \
-  --log-verbosity 4
+  --log-verbosity 4 \
+  --tensor-split 12,16 \
 
+  
   # --sleep-idle-seconds 60 \
   # --ctx-size 262144 \
   # --ctx-size 217088 \

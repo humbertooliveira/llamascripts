@@ -41,9 +41,8 @@ CUDA_VISIBLE_DEVICES=0,1 $BINARY \
   --kv-unified \
   --no-context-shift \
   --metrics \
-  --tensor-split 0.6,0.4 \
-  --ubatch-size 256 
-  # --override-kv nextn_predict_layers=int:3
+  --tensor-split 0.55,0.44 \
+  --log-verbosity 4 \
   
 
   # --sleep-idle-seconds 60 \

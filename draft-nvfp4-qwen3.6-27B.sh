@@ -5,7 +5,7 @@ BINARY=$HOME/llamacpp/build/bin/llama-server
 MODEL=$HOME/models/freenixi/Abiray-Qwen3.6-27B-NVFP4.gguf
 # MODEL=$HOME/models/libertaidai/Qwen3.6-27B-NVFP4-Q4_K_M.gguf
 DRAFT_MODEL="$HOME/models/unsloth/Qwen3.5-0.8B-UD-Q8_K_XL.gguf"
-SPECTYPE=ngram-mod
+SPECTYPE=ngram-mod,draft-simple
 DRAFTMAX="16"
 ALIAS="qwen3.6-27B"
 CTX=$((${1:-128} * 1024))
@@ -15,11 +15,11 @@ CUDA_VISIBLE_DEVICES=0,1 $BINARY \
   --model $MODEL \
   --model-draft $DRAFT_MODEL \
   --alias $ALIAS \
-  --spec-type $SPECTYPE \
-  --spec-draft-n-max $DRAFTMAX \
   --port 9081 \
   --host 192.168.1.15 \
   --ctx-size $CTX \
+  --spec-type $SPECTYPE \
+  --spec-draft-n-max $DRAFTMAX \
   --cache-type-k q8_0 \
   --cache-type-v q8_0 \
   --gpu-layers 99 \
@@ -36,9 +36,13 @@ CUDA_VISIBLE_DEVICES=0,1 $BINARY \
   --kv-unified \
   --no-context-shift \
   --metrics \
-  --log-verbosity 4
-  
+  --log-verbosity 4 \
 
+  # --spec-draft-ctx-size $CTX \
+  # --ubatch-size 1024 \
+  # --tensor-split 0.55,0.45 \  
+  # --spec-type $SPECTYPE \
+  # --spec-draft-n-max $DRAFTMAX \
   # --sleep-idle-seconds 60 \
   # --ctx-size 262144 \
   # --ctx-size 217088 \

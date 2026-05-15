@@ -11,7 +11,9 @@
 
 # --- CONFIGURATION ---
 BINARY=$HOME/tests/mtp-clean-unsloth/llama.cpp/build/bin/llama-server
-MODEL=$HOME/tests/mtp-clean-unsloth/Qwen3.6-27B-UD-Q4_K_XL.gguf
+# MODEL=$HOME/tests/mtp-clean-unsloth/Qwen3.6-27B-UD-Q4_K_XL.gguf
+MODEL=$HOME/tests/mtp-clean-unsloth/Qwen3.6-27B-UD-Q5_K_XL.gguf
+# MODEL=$HOME/tests/mtp-clean-unsloth/Qwen3.6-27B-Q6_K.gguf
 SPECTYPE=draft-mtp
 DRAFTMAX=3
 ALIAS="qwen3.6-27B-MTP"
@@ -44,9 +46,11 @@ CUDA_VISIBLE_DEVICES=0,1 $BINARY \
   --kv-unified \
   --no-context-shift \
   --metrics \
-  --tensor-split 0.6,0.4 \
+  --tensor-split 0.53,0.47 \
+  --log-verbosity 4 \
   --ubatch-size 256 \
-  --log-verbosity 4
+
+
   # --override-kv nextn_predict_layers=int:3
   
 
