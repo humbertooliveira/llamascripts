@@ -1,27 +1,29 @@
 #!/bin/bash
 
-BINARY=$HOME/llamacpp/build/bin/llama-server
-MODEL=$HOME/models/unsloth/Qwen3.6-27B-UD-Q4_K_XL.gguf
-DRAFT_MODEL=$HOME/models/unsloth/Qwen3.5-0.8B-UD-Q8_K_XL.gguf
-#DRAFT_MODEL="$HOME/models/qwen/qwen2.5-0.5b-instruct-q8_0.gguf"
-#DRAFT_MODEL="$HOME/models/qwen/qwen2.5-coder-0.5b-instruct-q8_0.gguf" # o coder teve uma aceptance rate menor
-SPECTYPE=ngram-mod,draft-simple
-DRAFTMAX=16
-ALIAS="qwen3.6-27B"
-SCRIPT_NAME="${0##*/}.log"
-LOG_PATH=/home/humberto/llamascripts/.logs/$SCRIPT_NAME
+# https://huggingface.co/havenoammo/Qwen3.6-35B-A3B-MTP-GGUF
+# --- CONFIGURATION ---
+BINARY=$HOME/llamacpp-pr22673/build/bin/llama-server
+MODEL=$HOME/models/havenoammo/Qwen3.6-35B-A3B-MTP-UD-Q4_K_XL.gguf
+SPECTYPE=draft-mtp
+DRAFTMAX=3
+ALIAS="qwen3.6-35B"
+CTX=$((${1:-128} * 1024))
+
 echo "Starting server from $BINARY with model $MODEL..."
-echo "Saving log to $LOG_PATH"
+
+echo "Cleaning up previous instances..."
+pkill -f llama-server
+sleep 2
+
 
 CUDA_VISIBLE_DEVICES=0,1 $BINARY \
   --model $MODEL \
-  --model-draft $DRAFT_MODEL \
   --alias $ALIAS \
   --spec-type $SPECTYPE \
   --spec-draft-n-max $DRAFTMAX \
   --port 9081 \
   --host 192.168.1.15 \
-  --ctx-size 131072  \
+  --ctx-size $CTX  \
   --cache-type-k q8_0 \
   --cache-type-v q8_0 \
   --gpu-layers 99 \
@@ -38,15 +40,10 @@ CUDA_VISIBLE_DEVICES=0,1 $BINARY \
   --kv-unified \
   --no-context-shift \
   --metrics \
-  --no-mmproj \
-  --tensor-split 0.55,0.45 \
-  --log-verbosity 4 \
-  --log-file $LOG_PATH \
-  --log-timestamps \
-  --log-colors off \
-  2>&1 | tee -a $LOG_PATH
-
+  --tensor-split 0.6,0.4 \
+  --ubatch-size 256 
   
+
   # --sleep-idle-seconds 60 \
   # --ctx-size 262144 \
   # --ctx-size 217088 \

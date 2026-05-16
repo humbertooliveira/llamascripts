@@ -9,7 +9,10 @@ SPECTYPE=ngram-mod,draft-simple
 DRAFTMAX="16"
 ALIAS="qwen3.6-27B"
 CTX=$((${1:-128} * 1024))
-
+SCRIPT_NAME="${0##*/}.log"
+LOG_PATH=/home/humberto/llamascripts/.logs/$SCRIPT_NAME
+echo "Starting server from $BINARY with model $MODEL..."
+echo "Saving log to $LOG_PATH"
 
 CUDA_VISIBLE_DEVICES=0,1 $BINARY \
   --model $MODEL \
@@ -36,7 +39,12 @@ CUDA_VISIBLE_DEVICES=0,1 $BINARY \
   --kv-unified \
   --no-context-shift \
   --metrics \
+  --no-mmproj \
+  --tensor-split 0.55,0.45 \
   --log-verbosity 4 \
+  --log-file $LOG_PATH \
+  --log-colors off \
+  2>&1 | tee -a $LOG_PATH
 
   # --spec-draft-ctx-size $CTX \
   # --ubatch-size 1024 \
