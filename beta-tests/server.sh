@@ -58,7 +58,7 @@ echo "Starting llama.cpp router on $HOST:$PORT (preset: $PRESET)"
 echo "Log: $LOG_FILE"
 
 # ── Launch ───────────────────────────────────────────────────────────────────
-
+export LLAMA_CACHE=''
 CUDA_VISIBLE_DEVICES=0,1 "$BINARY" \
   --models-preset "$PRESET" \
   --host "$HOST" \
