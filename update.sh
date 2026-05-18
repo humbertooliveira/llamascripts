@@ -4,7 +4,14 @@
 INSTALL_DIR="$HOME/llamacpp"
 BUILD_DIR="$INSTALL_DIR/build"
 
-echo "--- 🚀 Starting llama.cpp Update & Build ---"
+SCRIPT_NAME="build"
+LOG_FILE=/home/humberto/llamascripts/.logs/"${SCRIPT_NAME}-$(date +%Y%m%d).log"
+
+# 3. Print a clean visual separator with the exact restart time
+echo -e "\n==================================================" >> "$LOG_FILE"
+echo "  🚀 Starting llama.cpp Update & Build: $(date '+%Y-%m-%d %H:%M:%S')" >> "$LOG_FILE"
+echo -e "==================================================\n" >> "$LOG_FILE"
+
 
 # 5. Build with CUDA
 echo "🧹 Cleaning previous build..."
@@ -16,7 +23,7 @@ echo "🔄 Pulling latest CODE..."
 cd "$INSTALL_DIR"
 git fetch origin
 git checkout master
-git pull
+git pull 2>&1 | tee -a $LOG_FILE
 
 ## usar no máximo o cuda 13.0 para não ter o bug com os modelos MOE, conforme sloth
 # https://www.reddit.com/r/unsloth/comments/1sgl0wh/do_not_use_cuda_132_to_run_models/
@@ -38,12 +45,13 @@ cmake -B "$BUILD_DIR" \
   -DCMAKE_C_COMPILER=gcc-13 \
   -DCMAKE_CXX_COMPILER=g++-13 \
   -DCMAKE_CUDA_HOST_COMPILER=/usr/bin/gcc-13 \
-  -DCMAKE_CUDA_FLAGS="-allow-unsupported-compiler"
+  -DCMAKE_CUDA_FLAGS="-allow-unsupported-compiler" \
+   2>&1 | tee -a $LOG_FILE
 
 echo "🏗️ Compiling..."
-time cmake --build "$BUILD_DIR" --config Release -j $(nproc)
+{ time cmake --build "$BUILD_DIR" --config Release -j $(nproc); } 2>&1 | tee -a $LOG_FILE
 
-echo "--- ✅ Success! ---"
+echo "--- ✅ Success! ---" 2>&1 | tee -a $LOG_FILE
 
 
 
