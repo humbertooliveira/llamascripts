@@ -3,7 +3,7 @@
 BINARY=$HOME/llamacpp/build/bin/llama-server
 # MODEL=$HOME/models/havenoammo/Qwen3.6-27B-MTP-UD-Q5_K_XL.gguf
 # MODEL=$HOME/models/unsloth/Qwen3.6-27B-MTP-UD-Q4_K_XL.gguf
-MODEL=unsloth/Qwen3.6-27B-MTP-GGUF:UD-Q5_K_XL
+MODEL=/home/humberto/models/unsloth/mtp/Qwen3.6-27B-UD-Q5_K_XL.gguf
 SPECTYPE=draft-mtp
 DRAFTMAX=2
 ALIAS="qwen3.6-27B"
@@ -28,7 +28,7 @@ echo "Saving log to $LOG_FILE"
 
 
 CUDA_VISIBLE_DEVICES=0,1 $BINARY \
-  --hf-repo $MODEL \
+  --model $MODEL \
   --alias $ALIAS \
   --spec-type $SPECTYPE \
   --spec-draft-n-max $DRAFTMAX \

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 BINARY=$HOME/llamacpp/build/bin/llama-server
-MODEL=unsloth/Qwen3.6-35B-A3B-MTP-GGUF:UD-Q4_K_XL
+MODEL=/home/humberto/models/unsloth/mtp/Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf
 SPECTYPE=draft-mtp
 DRAFTMAX=2
 ALIAS="qwen3.6-35B"
@@ -25,7 +25,7 @@ echo "Starting server from $BINARY with model $MODEL..."
 echo "Saving log to $LOG_FILE"
 
 CUDA_VISIBLE_DEVICES=0,1 $BINARY \
-  --hf-repo $MODEL \
+  --model $MODEL \
   --alias $ALIAS \
   --spec-type $SPECTYPE \
   --spec-draft-n-max $DRAFTMAX \

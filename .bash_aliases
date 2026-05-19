@@ -2,6 +2,30 @@ alias qwen='~/llamascripts/mtp-qwen3.6-27B.sh'
 alias qwen35='~/llamascripts/mtp-qwen3.6-35B.sh'
 alias llamaupdate='~/llamascripts/update.sh'
 
+
+hf-download() {
+    if [ $# -eq 0 ]; then
+        echo "Error: No URLs provided."
+        echo "Usage: hf-download \"url1\" \"url2\" ... \"urlN\""
+        return 1
+    fi
+
+    echo "Starting download of $# files..."
+    
+    for url in "$@"; do
+        echo "-----------------------------------------------"
+        echo "Downloading: $url"
+        echo "-----------------------------------------------"
+        
+        # -L: Follow redirects
+        # -O: Keep filename (ignores query strings like ?download=true)
+        # -C -: Resume automatically from last byte
+        curl -L -O -C - "$url"
+    done
+    
+    echo "All downloads complete!"
+}
+
 build-llama()
 {
   # 1. Define the installation directory
