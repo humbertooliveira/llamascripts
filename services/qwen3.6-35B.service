@@ -1,0 +1,43 @@
+# sudo ln -s /home/humberto/llamascripts/services/qwen3.6-35B.service /etc/systemd/system/qwen3.6-35B.service
+
+[Unit]
+Description=Qwen3.6-35B Server Instance
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/home/humberto/llamacpp/build/bin/llama-server \
+  --model /home/humberto/models/unsloth/mtp/Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf \
+  --alias qwen3.6-35B \
+  --spec-type draft-mtp \
+  --spec-draft-n-max 2 \
+  --port 9081 \
+  --host 192.168.1.15 \
+  --ctx-size 131072 \
+  --cache-type-k q8_0 \
+  --cache-type-v q8_0 \
+  --gpu-layers 99 \
+  --flash-attn on \
+  --parallel 1 \
+  --temp 0.6 \
+  --top-p 0.95 \
+  --top-k 20 \
+  --min-p 0.00 \
+  --presence-penalty 0.0 \
+  --repeat-penalty 1.0 \
+  --cache-ram -1 \
+  --jinja \
+  --kv-unified \
+  --no-context-shift \
+  --metrics \
+  --no-mmproj \
+  --tensor-split 0.55,0.45 \
+  --log-verbosity 3 \
+  --log-colors off \
+  --chat-template-kwargs '{"preserve_thinking": true}'
+
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

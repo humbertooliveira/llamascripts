@@ -52,6 +52,7 @@ CUDA_VISIBLE_DEVICES=0,1 $BINARY \
   --tensor-split 0.55,0.45 \
   --log-verbosity 4 \
   --log-colors off \
+  --chat-template-kwargs '{"preserve_thinking": true}' \
   2>&1 | tee -a $LOG_FILE
 
 
