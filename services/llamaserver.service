@@ -1,0 +1,21 @@
+# sudo systemctl enable /home/humberto/llamascripts/services/llamaserver.service
+
+[Unit]
+Description=Llama.cpp Server
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/home/humberto/llamacpp/build/bin/llama-server \
+  --models-preset /home/humberto/llamascripts/services/llamaserver-models.ini \
+  --models-max 1 \
+  --port 9081 \
+  --host 192.168.1.15 \
+  --log-verbosity 3 \
+  --log-colors off
+
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

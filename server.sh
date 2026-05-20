@@ -63,6 +63,7 @@ CUDA_VISIBLE_DEVICES=0,1 "$BINARY" \
   --models-preset "$PRESET" \
   --host "$HOST" \
   --port "$PORT" \
+  --models-max 1 \
   --metrics \
   --log-verbosity 4 \
   --log-colors off 

@@ -31,7 +31,7 @@ ExecStart=/home/humberto/llamacpp/build/bin/llama-server \
   --no-context-shift \
   --metrics \
   --no-mmproj \
-  --tensor-split 0.55,0.45 \
+  --tensor-split "0.55,0.45" \
   --log-verbosity 3 \
   --log-colors off \
   --chat-template-kwargs '{"preserve_thinking": true}'
