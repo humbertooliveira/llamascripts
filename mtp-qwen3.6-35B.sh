@@ -3,7 +3,7 @@
 BINARY=$HOME/llamacpp/build/bin/llama-server
 MODEL=/home/humberto/models/unsloth/mtp/Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf
 SPECTYPE=draft-mtp
-DRAFTMAX=2
+DRAFTMAX=3
 ALIAS="qwen3.6-35B"
 CTX=$((${1:-128} * 1024))
 
@@ -49,9 +49,11 @@ CUDA_VISIBLE_DEVICES=0,1 $BINARY \
   --no-context-shift \
   --metrics \
   --no-mmproj \
-  --tensor-split 0.55,0.45 \
+  --tensor-split 0.53,0.47 \
   --log-verbosity 4 \
   --log-colors off \
+  --batch-size 1024 \
+  --ubatch-size 1024 \
   --chat-template-kwargs '{"preserve_thinking": true}' \
   2>&1 | tee -a $LOG_FILE
 
