@@ -12,7 +12,8 @@ ExecStart=/home/humberto/llamacpp/build/bin/llama-server \
   --port 9081 \
   --host 192.168.1.15 \
   --log-verbosity 3 \
-  --log-colors off
+  --log-colors off \
+  --metrics
 
 Restart=on-failure
 RestartSec=5
