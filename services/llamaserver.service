@@ -15,7 +15,7 @@ ExecStart=/home/humberto/llamacpp/build/bin/llama-server \
   --log-colors off \
   --metrics
 #ExecStartPost=/bin/sleep 10
-ExecStartPost=/usr/bin/curl --retry 20 --retry-delay 2 --retry-connrefused -X POST http://192.168.1.15:9081/models/load -H "Content-Type: application/json" -d '{"model": "qwen3.6-35B"}'
+#ExecStartPost=/usr/bin/curl --retry 20 --retry-delay 2 --retry-connrefused -X POST http://192.168.1.15:9081/models/load -H "Content-Type: application/json" -d '{"model": "qwen3.6-35B"}'
 Restart=on-failure
 RestartSec=5
 
