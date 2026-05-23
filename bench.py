@@ -55,12 +55,12 @@ def post(url, payload):
     with request.urlopen(req, timeout=300) as r:
         return json.loads(r.read())
 
-def run(args):
-    out = {"results": []}
+def run_model(url, model):
+    out = {"model": model, "url": url, "results": []}
     for p in PROMPTS:
         t0 = time.time()
-        r = post(f"{args.url}/v1/chat/completions", {
-            "model": "gemma4-31B",
+        r = post(f"{url}/v1/chat/completions", {
+            "model": model,
             "messages": [{"role": "user", "content": p["prompt"]}],
             "max_tokens": 192,
             "seed": 42,
@@ -85,8 +85,21 @@ def run(args):
     out["aggregate"] = {"n_requests": len(out["results"]), "total_predicted": tp, "total_draft": td, "total_draft_accepted": ta,
                         "aggregate_accept_rate": round(ta/td,4) if td else None, "wall_s_total": round(tw,2)}
     print("\nAggregate:", json.dumps(out["aggregate"], indent=2))
+    return out
+
+def run(args):
+    outputs = []
+    for idx, model in enumerate(args.models):
+        if idx:
+            print("\n" + "=" * 80)
+        print(f"Model: {model}")
+        print(f"URL:   {args.url}")
+        outputs.append(run_model(args.url, model))
+
     if args.out:
-        json.dump(out, open(args.out,"w"), indent=2); print("Wrote", args.out)
+        payload = outputs[0] if len(outputs) == 1 else {"url": args.url, "runs": outputs}
+        json.dump(payload, open(args.out,"w"), indent=2)
+        print("Wrote", args.out)
 
 def diff(a, b):
     A, B = json.load(open(a)), json.load(open(b))
@@ -105,9 +118,13 @@ def diff(a, b):
         print(f"{rb['name']:<20} {ar:>8.3f} {br:>8.3f} {br-ar:>+8.3f}")
 
 ap = argparse.ArgumentParser()
-ap.add_argument("--url", default="http://192.168.1.15:9081")
+ap.add_argument("--url")
+ap.add_argument("--model", dest="models", nargs="+")
 ap.add_argument("--out")
 ap.add_argument("--diff", nargs=2)
 a = ap.parse_args()
 if a.diff: diff(*a.diff)
-else: run(a)
+else:
+    if not a.url or not a.models:
+        ap.error("--url and --model are required unless --diff is used")
+    run(a)
