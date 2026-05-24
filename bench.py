@@ -118,13 +118,13 @@ def diff(a, b):
         print(f"{rb['name']:<20} {ar:>8.3f} {br:>8.3f} {br-ar:>+8.3f}")
 
 ap = argparse.ArgumentParser()
-ap.add_argument("--url")
+ap.add_argument("--url", default="http://192.168.1.15:9081")
 ap.add_argument("--model", dest="models", nargs="+")
 ap.add_argument("--out")
 ap.add_argument("--diff", nargs=2)
 a = ap.parse_args()
 if a.diff: diff(*a.diff)
 else:
-    if not a.url or not a.models:
-        ap.error("--url and --model are required unless --diff is used")
+    if not a.models:
+        ap.error("--model is required unless --diff is used")
     run(a)
