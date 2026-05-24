@@ -55,37 +55,74 @@ def post(url, payload):
     with request.urlopen(req, timeout=300) as r:
         return json.loads(r.read())
 
-def run_model(url, model):
-    out = {"model": model, "url": url, "results": []}
-    for p in PROMPTS:
-        t0 = time.time()
-        r = post(f"{url}/v1/chat/completions", {
-            "model": model,
-            "messages": [{"role": "user", "content": p["prompt"]}],
-            "max_tokens": 192,
-            "seed": 42,
-        })
-        wall = time.time() - t0
-        # OpenAI-compatible endpoint: timings are in usage or top-level
-        usage = r.get("usage", {}) or {}
-        t = r.get("timings", {}) or {}
-        predicted_n = usage.get("completion_tokens") or t.get("predicted_n")
-        predicted_per_second = t.get("predicted_per_second") or (predicted_n / wall if wall > 0 else 0)
-        rec = {"name": p["name"], "wall_s": round(wall,3),
-               "predicted_n": predicted_n, "predicted_per_second": round(predicted_per_second, 2),
-               "draft_n": t.get("draft_n",0), "draft_n_accepted": t.get("draft_n_accepted",0)}
-        rec["accept_rate"] = round(rec["draft_n_accepted"]/rec["draft_n"],4) if rec["draft_n"] else None
-        out["results"].append(rec)
-        ar = f"{rec['accept_rate']:.3f}" if rec["accept_rate"] is not None else "n/a"
-        print(f"  {rec['name']:<18} pred={rec['predicted_n']:>4} draft={rec['draft_n']:>4} acc={rec['draft_n_accepted']:>4} rate={ar} tok/s={rec['predicted_per_second']:.1f}")
-    td  = sum(x["draft_n"] or 0 for x in out["results"])
-    ta  = sum(x["draft_n_accepted"] or 0 for x in out["results"])
-    tp  = sum(x["predicted_n"] or 0 for x in out["results"])
-    tw  = sum(x["wall_s"] for x in out["results"])
-    out["aggregate"] = {"n_requests": len(out["results"]), "total_predicted": tp, "total_draft": td, "total_draft_accepted": ta,
-                        "aggregate_accept_rate": round(ta/td,4) if td else None, "wall_s_total": round(tw,2)}
-    print("\nAggregate:", json.dumps(out["aggregate"], indent=2))
-    return out
+def run_model(url, model, runs=1):
+    all_runs = []
+    for run_idx in range(runs):
+        if runs > 1:
+            print(f"\n--- Run {run_idx + 1}/{runs} ---")
+        out = {"model": model, "url": url, "results": []}
+        for p in PROMPTS:
+            t0 = time.time()
+            r = post(f"{url}/v1/chat/completions", {
+                "model": model,
+                "messages": [{"role": "user", "content": p["prompt"]}],
+                "max_tokens": 192,
+                "seed": 42,
+            })
+            wall = time.time() - t0
+            # OpenAI-compatible endpoint: timings are in usage or top-level
+            usage = r.get("usage", {}) or {}
+            t = r.get("timings", {}) or {}
+            predicted_n = usage.get("completion_tokens") or t.get("predicted_n")
+            predicted_per_second = t.get("predicted_per_second") or (predicted_n / wall if wall > 0 else 0)
+            rec = {"name": p["name"], "wall_s": round(wall,3),
+                   "predicted_n": predicted_n, "predicted_per_second": round(predicted_per_second, 2),
+                   "draft_n": t.get("draft_n",0), "draft_n_accepted": t.get("draft_n_accepted",0)}
+            rec["accept_rate"] = round(rec["draft_n_accepted"]/rec["draft_n"],4) if rec["draft_n"] else None
+            out["results"].append(rec)
+            ar = f"{rec['accept_rate']:.3f}" if rec["accept_rate"] is not None else "n/a"
+            print(f"  {rec['name']:<18} pred={rec['predicted_n']:>4} draft={rec['draft_n']:>4} acc={rec['draft_n_accepted']:>4} rate={ar} tok/s={rec['predicted_per_second']:.1f}")
+        td  = sum(x["draft_n"] or 0 for x in out["results"])
+        ta  = sum(x["draft_n_accepted"] or 0 for x in out["results"])
+        tp  = sum(x["predicted_n"] or 0 for x in out["results"])
+        tw  = sum(x["wall_s"] for x in out["results"])
+        out["aggregate"] = {"n_requests": len(out["results"]), "total_predicted": tp, "total_draft": td, "total_draft_accepted": ta,
+                            "aggregate_accept_rate": round(ta/td,4) if td else None, "wall_s_total": round(tw,2)}
+        print("\nAggregate:", json.dumps(out["aggregate"], indent=2))
+        all_runs.append(out)
+
+    if runs > 1:
+        print(f"\n{'=' * 60}")
+        print("Averages across all runs:")
+        print(f"{'=' * 60}")
+        avg_results = []
+        for p_idx in range(len(PROMPTS)):
+            avg_wall = sum(r["results"][p_idx]["wall_s"] for r in all_runs) / runs
+            avg_pred = sum(r["results"][p_idx]["predicted_n"] for r in all_runs) / runs
+            avg_tok_s = sum(r["results"][p_idx]["predicted_per_second"] for r in all_runs) / runs
+            avg_draft = sum(r["results"][p_idx]["draft_n"] for r in all_runs) / runs
+            avg_acc = sum(r["results"][p_idx]["draft_n_accepted"] for r in all_runs) / runs
+            avg_rate = sum(r["results"][p_idx]["accept_rate"] or 0 for r in all_runs) / runs
+            rec = {"name": PROMPTS[p_idx]["name"], "wall_s": round(avg_wall, 3),
+                   "predicted_n": round(avg_pred, 1), "predicted_per_second": round(avg_tok_s, 2),
+                   "draft_n": round(avg_draft, 1), "draft_n_accepted": round(avg_acc, 1),
+                   "accept_rate": round(avg_rate, 4)}
+            avg_results.append(rec)
+            ar = f"{rec['accept_rate']:.3f}" if rec["accept_rate"] else "n/a"
+            print(f"  {rec['name']:<18} pred={rec['predicted_n']:>6.1f} draft={rec['draft_n']:>6.1f} acc={rec['draft_n_accepted']:>6.1f} rate={ar} tok/s={rec['predicted_per_second']:.1f}")
+
+        avg_td = sum(x["draft_n"] for x in avg_results)
+        avg_ta = sum(x["draft_n_accepted"] for x in avg_results)
+        avg_tp = sum(x["predicted_n"] for x in avg_results)
+        avg_tw = sum(x["wall_s"] for x in avg_results)
+        avg_aggregate = {"n_requests": len(avg_results), "total_predicted": round(avg_tp, 1),
+                         "total_draft": round(avg_td, 1), "total_draft_accepted": round(avg_ta, 1),
+                         "aggregate_accept_rate": round(avg_ta/avg_td, 4) if avg_td else None,
+                         "wall_s_total": round(avg_tw, 2)}
+        print(f"\nAverage Aggregate:", json.dumps(avg_aggregate, indent=2))
+        all_runs.append({"_average": True, "results": avg_results, "aggregate": avg_aggregate})
+
+    return all_runs[0] if runs == 1 else all_runs
 
 def run(args):
     outputs = []
@@ -94,7 +131,9 @@ def run(args):
             print("\n" + "=" * 80)
         print(f"Model: {model}")
         print(f"URL:   {args.url}")
-        outputs.append(run_model(args.url, model))
+        if args.runs > 1:
+            print(f"Runs:  {args.runs}")
+        outputs.append(run_model(args.url, model, args.runs))
 
     if args.out:
         payload = outputs[0] if len(outputs) == 1 else {"url": args.url, "runs": outputs}
@@ -120,6 +159,7 @@ def diff(a, b):
 ap = argparse.ArgumentParser()
 ap.add_argument("--url", default="http://192.168.1.15:9081")
 ap.add_argument("--model", dest="models", nargs="+")
+ap.add_argument("--runs", type=int, default=1, help="Number of times to test each model (default: 1)")
 ap.add_argument("--out")
 ap.add_argument("--diff", nargs=2)
 a = ap.parse_args()
