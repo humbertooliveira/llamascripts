@@ -20,7 +20,7 @@ hf-download() {
         # -L: Follow redirects
         # -O: Keep filename (ignores query strings like ?download=true)
         # -C -: Resume automatically from last byte
-        curl -L -O -C - "$url"
+        curl -H "Authorization: Bearer $HF_TOKEN" -L -O -C - "$url"
     done
     
     echo "All downloads complete!"
