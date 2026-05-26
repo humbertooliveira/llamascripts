@@ -1,7 +1,6 @@
 alias qwen='~/llamascripts/mtp-qwen3.6-27B.sh'
 alias qwen35='~/llamascripts/mtp-qwen3.6-35B.sh'
-alias llamaupdate='sudo systemctl stop llamaserver.service && ~/llamascripts/update.sh && sudo systemctl start llamaserver.service'
-
+# alias llamaupdate='sudo systemctl stop llamaserver.service && ~/llamascripts/update.sh && sudo systemctl start llamaserver.service'
 
 hf-download() {
     if [ $# -eq 0 ]; then
@@ -26,11 +25,30 @@ hf-download() {
     echo "All downloads complete!"
 }
 
-build-llama()
+gitgraph()
+{
+  # Default to current directory if no path is provided
+  local repo_path="${1:-.}"
+
+  # Verify the path is a valid git repository
+  if ! git -C "$repo_path" rev-parse --is-inside-work-tree &>/dev/null; then
+    echo "Error: '$repo_path' is not a git repository." >&2
+    return 1
+  fi
+
+  # Get the active branch name dynamically
+  local current_branch=$(git -C "$repo_path" rev-parse --abbrev-ref HEAD)
+  
+  git -C "$repo_path" log --graph --left-right --pretty=format:"%C(auto)%m%h %ad:%d %s" --date=format:"%Y-%m-%d %H:%M" "origin/$current_branch" "$current_branch~40...$current_branch"
+}
+
+llamabuild()
 {
   # 1. Define the installation directory
-  INSTALL_DIR="$HOME/llamacpp"
-  BUILD_DIR="$INSTALL_DIR/build"
+  local INSTALL_DIR="${1:-$HOME/llamacpp}"
+  local BUILD_DIR="$INSTALL_DIR/build"
+
+  sudo systemctl stop llamaserver.service
 
   # 5. Build with CUDA
   echo "🧹 Cleaning previous build..."
@@ -57,6 +75,10 @@ build-llama()
     
   echo "🏗️ Compiling..."
   time cmake --build "$BUILD_DIR" --config Release -j $(nproc);  
+
+  cd - &>/dev/null
+
+  sudo systemctl start llamaserver.service
 
   echo "--- ✅ Success! ---" 
 }
