@@ -36,10 +36,12 @@ gitgraph()
     return 1
   fi
 
+  git fetch origin
+
   # Get the active branch name dynamically
   local current_branch=$(git -C "$repo_path" rev-parse --abbrev-ref HEAD)
   
-  git -C "$repo_path" log --graph --left-right --pretty=format:"%C(auto)%m%h %ad:%d %s" --date=format:"%Y-%m-%d %H:%M" "origin/$current_branch" "$current_branch~40...$current_branch"
+  git -C "$repo_path" log --graph --left-right --pretty=format:"%C(auto)%m%h %ad:%d %s" --date=format:"%Y-%m-%d %H:%M" "origin/$current_branch" "$current_branch~20...$current_branch"
 }
 
 llamabuild()
@@ -48,6 +50,7 @@ llamabuild()
   local INSTALL_DIR="${1:-$HOME/llamacpp}"
   local BUILD_DIR="$INSTALL_DIR/build"
 
+  echo "Stoping service..."
   sudo systemctl stop llamaserver.service
 
   # 5. Build with CUDA
@@ -78,6 +81,7 @@ llamabuild()
 
   cd - &>/dev/null
 
+  echo "Starting service..."
   sudo systemctl start llamaserver.service
 
   echo "--- ✅ Success! ---" 
