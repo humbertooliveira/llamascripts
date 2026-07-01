@@ -10,7 +10,7 @@ ExecStart=/home/humberto/llamacpp/build/bin/llama-server \
   --models-preset /home/humberto/llamascripts/services/llamaserver-models.ini \
   --models-max 1 \
   --port 9081 \
-  --host 192.168.1.15 \
+  --host 0.0.0.0 \
   --log-verbosity 3 \
   --log-colors off \
   --metrics

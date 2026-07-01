@@ -157,7 +157,7 @@ def diff(a, b):
         print(f"{rb['name']:<20} {ar:>8.3f} {br:>8.3f} {br-ar:>+8.3f}")
 
 ap = argparse.ArgumentParser()
-ap.add_argument("--url", default="http://192.168.1.15:9081")
+ap.add_argument("--url", default="http://192.168.3.15:9081")
 ap.add_argument("--model", dest="models", nargs="+")
 ap.add_argument("--runs", type=int, default=1, help="Number of times to test each model (default: 1)")
 ap.add_argument("--out")
